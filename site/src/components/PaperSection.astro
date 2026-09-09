@@ -1,17 +1,11 @@
 ---
 import { project } from "../data/project";
-
-// Same flattened superscripts as the hero byline.
-const authors = project.authors.map((a) => ({
-  ...a,
-  sup: [a.affs.join(","), ...a.marks].join(""),
-}));
-// flatMap, not filter: only the `in` check inside the callback narrows the
-// union down to the authors that actually carry an address.
-const corresponding = project.authors.flatMap((a) =>
-  "email" in a ? [{ name: a.name, email: a.email }] : [],
-);
 ---
+<!--
+  Deliberately minimal: the hero already carries the byline, the summary and
+  the download buttons, so this section adds only what it alone provides —
+  the identifier, the scope caveats, and something to paste into a .bib file.
+-->
 <section class="section section--sunken" id="paper">
   <div class="wrap paper">
     <div>
@@ -20,48 +14,8 @@ const corresponding = project.authors.flatMap((a) =>
       <p class="paper__status">
         <span class="badge badge--accent">Preprint</span>
         <a class="paper__id" href={project.links.arxivAbs} rel="noopener">arXiv:{project.arxiv.id}</a>
-        <span>Submitted {project.arxiv.submitted}. Not yet peer-reviewed — no venue or DOI, so cite the preprint.</span>
+        <span>Submitted {project.arxiv.submitted}.</span>
       </p>
-
-      <div class="paper__by">
-        <p class="paper__authors">
-          {authors.map((a, i) => (
-            <span class="paper__author">
-              {a.name}<sup>{a.sup}</sup>{i < authors.length - 1 && <span aria-hidden="true">,</span>}
-            </span>
-          ))}
-        </p>
-        <p class="paper__affs">
-          {project.affiliations.map((f) => (
-            <span class="paper__aff"><sup>{f.id}</sup>{f.name}</span>
-          ))}
-        </p>
-        <p class="paper__notes">
-          {project.authorNotes.map((n) => (
-            <span><sup>{n.mark}</sup>{n.text}</span>
-          ))}
-        </p>
-        <p class="paper__contact">
-          Correspondence:{" "}
-          {corresponding.map((a, i) => (
-            <span>{i > 0 && <span aria-hidden="true">, </span>}<a href={`mailto:${a.email}`}>{a.email}</a></span>
-          ))}
-        </p>
-      </div>
-      <p class="paper__abs">
-        We introduce Climate-ModernBERT, a family of climate-adapted encoders obtained by
-        continued pretraining of ModernBERT-Base on academic climate text, climate-filtered web
-        data, and synthetic climate documents. Comparing joint continued pretraining against
-        parameter-space merging of independently specialized checkpoints across nine climate NLP
-        benchmarks, the best model reaches 76.3 average F1 — 2.8 points over the baseline.
-        Academic corpora provide the strongest adaptation signal, and merging outperforms joint
-        multi-source training.
-      </p>
-      <div class="paper__actions">
-        <a class="btn btn--primary" href={project.links.arxivPdf} rel="noopener">Read the PDF</a>
-        <a class="btn" href={project.links.arxivAbs} rel="noopener">arXiv abstract</a>
-        <a class="btn" href={project.links.github} rel="noopener">Code &amp; pipelines</a>
-      </div>
 
       <div class="cite">
         <div class="cite__head">
@@ -95,10 +49,10 @@ const corresponding = project.authors.flatMap((a) =>
     font-size: clamp(1.4rem, 3.2vw, 1.95rem);
     line-height: 1.25; letter-spacing: -.015em; font-weight: 600; margin-bottom: 1rem;
   }
+  /* No rule underneath — .cite carries the only divider in this column now. */
   .paper__status {
     display: flex; flex-wrap: wrap; align-items: baseline; gap: .55rem;
-    font-size: .8125rem; color: var(--fg-muted);
-    padding-bottom: 1.25rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--line);
+    font-size: .8125rem; color: var(--fg-muted); margin: 0;
   }
   .paper__id {
     font-family: var(--font-mono); font-size: .8125rem;
@@ -107,36 +61,6 @@ const corresponding = project.authors.flatMap((a) =>
   }
   .paper__id:hover { border-bottom-color: var(--accent); }
 
-  .paper__by { margin-bottom: 1.5rem; }
-  .paper__authors {
-    display: flex; flex-wrap: wrap; gap: .1rem .4rem;
-    font-size: .9375rem; font-weight: 560; color: var(--fg); margin: 0 0 .4rem;
-  }
-  .paper__author { white-space: nowrap; }
-  .paper__authors sup {
-    font-size: .65em; font-weight: 500; color: var(--accent);
-    margin-left: .1em; vertical-align: super; line-height: 0;
-  }
-  .paper__affs {
-    display: flex; flex-wrap: wrap; gap: .15rem .9rem;
-    font-size: .8125rem; color: var(--fg-muted); margin: 0;
-  }
-  .paper__aff sup {
-    font-size: .7em; color: var(--accent); margin-right: .2em;
-    vertical-align: super; line-height: 0;
-  }
-  .paper__notes {
-    display: flex; flex-wrap: wrap; gap: .15rem .9rem;
-    font-size: .75rem; color: var(--fg-faint); margin: .5rem 0 0;
-  }
-  .paper__notes sup { margin-right: .25em; vertical-align: super; line-height: 0; }
-  .paper__contact { font-size: .75rem; color: var(--fg-faint); margin: .35rem 0 0; }
-  .paper__contact a { color: var(--fg-muted); }
-  .paper__contact a + span { margin-right: .1rem; }
-
-  .paper__abs { font-size: .9375rem; color: var(--fg-muted); max-width: var(--measure); margin-bottom: 1.5rem; }
-  .paper__actions { display: flex; flex-wrap: wrap; gap: .6rem; }
-
   .paper__side {
     background: var(--bg-raised); border: 1px solid var(--line);
     border-radius: var(--radius-lg); padding: 1.35rem; align-self: start;
@@ -144,7 +68,7 @@ const corresponding = project.authors.flatMap((a) =>
   .paper__side h3 { font-size: .875rem; margin-bottom: .6rem; }
   .paper__side ul { margin: 0; padding-left: 1.1rem; font-size: .8125rem; color: var(--fg-muted); display: grid; gap: .45rem; }
 
-  .cite { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+  .cite { margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
   .cite__head {
     display: flex; align-items: center; justify-content: space-between;
     gap: 1rem; margin-bottom: .7rem;
