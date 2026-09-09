@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { withBase } from "../lib/base";
+import { project } from "../data/project";
 
 interface Props { title: string; description: string; }
 const { title, description } = Astro.props;
@@ -21,6 +22,14 @@ const ogImage = withBase("framework-overview.png");
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(ogImage, Astro.site ?? "https://climatemodernbert.github.io").href} />
     <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Highwire Press tags: what Google Scholar and Zotero read. -->
+    <meta name="citation_title" content={project.paperTitle} />
+    {project.authors.map((a) => <meta name="citation_author" content={a.name} />)}
+    <meta name="citation_publication_date" content="2026/09/07" />
+    <meta name="citation_arxiv_id" content={project.arxiv.id} />
+    <meta name="citation_pdf_url" content={project.links.arxivPdf} />
+    <meta name="citation_abstract_html_url" content={project.links.arxivAbs} />
 
     <!-- Applied before first paint so a stored theme choice never flashes. -->
     <script is:inline>

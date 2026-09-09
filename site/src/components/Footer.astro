@@ -1,5 +1,4 @@
 ---
-import { withBase } from "../lib/base";
 import { project } from "../data/project";
 ---
 <footer class="foot">
@@ -13,7 +12,8 @@ import { project } from "../data/project";
     </div>
 
     <nav class="foot__links" aria-label="Project links">
-      <a href={withBase(project.links.paperPdf)}>Paper (PDF)</a>
+      <a href={project.links.arxivAbs} rel="noopener">arXiv:{project.arxiv.id}</a>
+      <a href={project.links.arxivPdf} rel="noopener">Paper (PDF)</a>
       <a href={project.links.hfOrgPage} rel="noopener">Hugging Face organization</a>
       <a href={project.links.hfCollectionAll} rel="noopener">Legacy experimental collection</a>
       <a href={project.links.github} rel="noopener">GitHub</a>
@@ -22,8 +22,8 @@ import { project } from "../data/project";
     </nav>
 
     <p class="foot__note">
-      {project.status}. Figures on this page are transcribed from the manuscript PDF hosted
-      in this repository; no result here is extrapolated or estimated.
+      {project.status}. Figures on this page are transcribed from the preprint;
+      no result here is extrapolated or estimated.
     </p>
   </div>
 </footer>

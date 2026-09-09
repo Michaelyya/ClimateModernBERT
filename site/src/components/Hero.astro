@@ -1,6 +1,12 @@
 ---
-import { withBase } from "../lib/base";
 import { project } from "../data/project";
+
+// Affiliation digits and footnote marks are flattened into one superscript per
+// author (e.g. "1,2†") so the name and its marker can never wrap apart.
+const authors = project.authors.map((a) => ({
+  ...a,
+  sup: [a.affs.join(","), ...a.marks].join(""),
+}));
 ---
 <section class="hero" id="top">
   <div class="wrap hero__inner">
@@ -10,10 +16,34 @@ import { project } from "../data/project";
 
     <h1 class="hero__title">ClimateModernBERT</h1>
     <p class="hero__sub">{project.tagline}</p>
+
+    <div class="byline">
+      <p class="byline__authors">
+        {authors.map((a, i) => (
+          <span class="byline__author">
+            {a.name}<sup>{a.sup}</sup>{i < authors.length - 1 && <span aria-hidden="true">,</span>}
+          </span>
+        ))}
+      </p>
+      <p class="byline__affs">
+        {project.affiliations.map((f) => (
+          <span class="byline__aff"><sup>{f.id}</sup>{f.name}</span>
+        ))}
+      </p>
+      <p class="byline__notes">
+        {project.authorNotes.map((n) => (
+          <span class="byline__note"><sup>{n.mark}</sup>{n.text}</span>
+        ))}
+      </p>
+    </div>
+
     <p class="hero__blurb">{project.blurb}</p>
 
     <div class="hero__actions">
-      <a class="btn btn--primary" href={withBase(project.links.paperPdf)}>
+      <a class="btn btn--primary" href={project.links.arxivAbs} rel="noopener">
+        arXiv:{project.arxiv.id}
+      </a>
+      <a class="btn" href={project.links.arxivPdf} rel="noopener">
         <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M4 1.5h5.2L13 5.3V14a.5.5 0 01-.5.5h-9A.5.5 0 013 14V2a.5.5 0 01.5-.5zM9 2.6V5.5h2.9L9 2.6z"/></svg>
         Paper (PDF)
       </a>
@@ -82,6 +112,36 @@ import { project } from "../data/project";
     max-width: 30ch;
     margin: 0 0 1.5rem;
   }
+  /* Byline reads as one block of small print between the title and the abstract. */
+  .byline { margin: 0 0 1.75rem; max-width: 74ch; }
+  .byline__authors {
+    display: flex; flex-wrap: wrap; gap: .1rem .45rem;
+    font-size: 1rem; font-weight: 560; color: var(--fg);
+    margin: 0 0 .5rem;
+  }
+  .byline__author { white-space: nowrap; }
+  .byline__authors sup {
+    font-size: .625em; font-weight: 500; color: var(--accent);
+    margin-left: .1em; vertical-align: super; line-height: 0;
+  }
+
+  .byline__affs {
+    display: flex; flex-wrap: wrap; gap: .15rem 1rem;
+    font-size: .8125rem; color: var(--fg-muted); margin: 0;
+  }
+  .byline__aff sup {
+    font-size: .7em; color: var(--accent); margin-right: .2em;
+    vertical-align: super; line-height: 0;
+  }
+
+  .byline__notes {
+    display: flex; flex-wrap: wrap; gap: .15rem 1rem;
+    font-size: .75rem; color: var(--fg-faint);
+    margin: .6rem 0 0; padding-top: .6rem;
+    border-top: 1px solid var(--line);
+  }
+  .byline__note sup { margin-right: .25em; vertical-align: super; line-height: 0; }
+
   .hero__blurb {
     max-width: 62ch;
     font-size: 1.05rem;

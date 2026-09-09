@@ -5,9 +5,15 @@
 const GITHUB = "https://github.com/ClimateModernBERT/ClimateModernBERT";
 
 /**
+ * The arXiv identifier. Every arXiv URL below is derived from it, so a new
+ * version (v2, v3, ...) is a one-line change here.
+ */
+const ARXIV_ID = "2609.07798";
+
+/**
  * Project-level facts.
  *
- * SOURCE OF TRUTH: paper/climate-modernbert.pdf (manuscript, under review).
+ * SOURCE OF TRUTH: arXiv:2609.07798 (the de-anonymized preprint).
  * Every number here is transcribed from that PDF. If the paper changes, edit
  * this file — no component hard-codes these values.
  */
@@ -17,12 +23,14 @@ export const project = {
   paperTitle:
     "Climate-ModernBERT: Revisiting Corpus Composition for Domain-Adaptive Continued Pretraining",
   tagline: "Revisiting Corpus Composition for Domain-Adaptive Continued Pretraining",
-  /** The manuscript is unpublished / under review. Never claim a venue. */
-  status: "Preprint manuscript · under review",
+  /**
+   * A public arXiv preprint, not yet peer-reviewed. Never claim a venue.
+   */
+  status: `Preprint · arXiv:${ARXIV_ID}`,
   blurb:
     "A family of climate-domain ModernBERT encoders. We continue-pretrain ModernBERT-Base on academic climate text, climate-filtered web data, and synthetic climate text, then ask which corpus composition — and which integration mechanism — actually helps.",
   abstract:
-    "Natural Language Processing (NLP) in the climate domain requires models to process heterogeneous text sources, including scientific literature, policy disclosures, and synthetic reports. However, how to effectively combine diverse domain corpora during continued pretraining (CPT) remains underexplored. We introduce Climate-ModernBERT, a family of climate-adapted encoder models obtained through continued pretraining of ModernBERT-Base on three climate corpora: academic climate text, climate-filtered web data, and synthetic climate documents. We systematically compare joint continued pretraining on corpus mixtures with parameter-space merging of independently specialized checkpoints. Across nine climate NLP benchmarks, our best model achieves 76.3 average F1, improving significantly over a climate-adapted ModernBERT baseline by 2.8 points. Within the climate NLP setting, the results show that academic climate corpora provide the strongest adaptation signal among the evaluated sources, while parameter-space merging improves over joint multi-source training and better preserves complementary information from heterogeneous climate corpora. We release all Climate-ModernBERT variants and training checkpoints to support future research in climate NLP and domain-adaptive pretraining.",
+    "Natural Language Processing (NLP) in the climate domain requires models to process heterogeneous text sources, including scientific literature, policy disclosures, and synthetic reports. However, how to effectively combine diverse domain corpora during continued pretraining (CPT) remains underexplored. We introduce Climate-ModernBERT, a family of climate-adapted encoder models obtained through continued pretraining of ModernBERT-Base on three climate corpora: academic climate text, climate-filtered web data, and synthetic climate documents. We systematically compare joint continued pretraining on corpus mixtures with parameter-space merging of independently specialized checkpoints. Across nine climate NLP benchmarks, our best model achieves 76.3 average F1, improving significantly over a vanilla ModernBERT baseline by 2.8 points. Within the climate NLP setting, the results show that academic climate corpora provide the strongest adaptation signal among the evaluated sources, while parameter-space merging improves over joint multi-source training and better preserves complementary information from heterogeneous climate corpora. We release all Climate-ModernBERT variants and training checkpoints to support future research in climate NLP and domain-adaptive pretraining.",
 
   links: {
     github: GITHUB,
@@ -33,8 +41,59 @@ export const project = {
     /** Full experimental collection, including legacy runs. */
     hfCollectionAll: "https://huggingface.co/collections/sraj/cmb-all",
     hfOrg: "https://huggingface.co/sraj",
+    /** Canonical, citable, de-anonymized version of record. */
+    arxivAbs: `https://arxiv.org/abs/${ARXIV_ID}`,
+    arxivPdf: `https://arxiv.org/pdf/${ARXIV_ID}`,
+    /**
+     * In-repo mirror, copied into site/public/ by scripts/copy-assets.mjs.
+     * Still the ANONYMIZED ACL submission, so nothing on the site links it —
+     * point readers at arxivPdf until this file is replaced by the arXiv build.
+     */
     paperPdf: "climate-modernbert.pdf",
   },
+
+  /** arXiv identifier and first-submission date, for display and citation. */
+  arxiv: { id: ARXIV_ID, submitted: "7 September 2026" },
+
+  /**
+   * Affiliations, numbered in order of first appearance in the author list —
+   * the letter superscripts on the arXiv title page (M/Q/Z/E/P) become digits
+   * here, which is the convention readers expect on a project page.
+   */
+  affiliations: [
+    { id: 1, name: "McGill University" },
+    { id: 2, name: "Mila – Quebec AI Institute" },
+    { id: 3, name: "University of Zürich" },
+    { id: 4, name: "ETH Zürich" },
+    { id: 5, name: "Princeton University" },
+  ],
+
+  /** Author list, in paper order. `marks` are keyed to `authorNotes` below. */
+  authors: [
+    { name: "Yongan Yu", affs: [1, 2], marks: ["†"], email: "yongan.yu@mail.mcgill.ca" },
+    { name: "Shantam Raj", affs: [3], marks: ["†"], email: "shantam.raj@uzh.ch" },
+    { name: "Jingwei Ni", affs: [3, 4], marks: ["∗"] },
+    { name: "Ario Saeid Vaghefi", affs: [3], marks: [] },
+    { name: "Dominik Stammbach", affs: [5], marks: [] },
+    { name: "Markus Leippold", affs: [3], marks: ["∗"] },
+  ],
+
+  /** Footnotes on the arXiv title page, verbatim in meaning. */
+  authorNotes: [
+    { mark: "†", text: "Equal contribution" },
+    { mark: "∗", text: "Work conducted under the supervision of these authors" },
+  ],
+
+  /** Preprint citation. Update the year and journal field once a venue exists. */
+  bibtex: `@article{yu2026climatemodernbert,
+  title   = {Climate-ModernBERT: Revisiting Corpus Composition for
+             Domain-Adaptive Continued Pretraining},
+  author  = {Yu, Yongan and Raj, Shantam and Ni, Jingwei and
+             Vaghefi, Ario Saeid and Stammbach, Dominik and Leippold, Markus},
+  journal = {arXiv preprint arXiv:${ARXIV_ID}},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/${ARXIV_ID}},
+}`,
 
   /** Headline counts, all from the manuscript (§1, §4.2). */
   scale: [
@@ -225,3 +284,4 @@ export const project = {
 } as const;
 
 export type Corpus = (typeof project.corpora)[number];
+export type Author = (typeof project.authors)[number];

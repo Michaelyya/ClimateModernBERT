@@ -1,6 +1,16 @@
 ---
-import { withBase } from "../lib/base";
 import { project } from "../data/project";
+
+// Same flattened superscripts as the hero byline.
+const authors = project.authors.map((a) => ({
+  ...a,
+  sup: [a.affs.join(","), ...a.marks].join(""),
+}));
+// flatMap, not filter: only the `in` check inside the callback narrows the
+// union down to the authors that actually carry an address.
+const corresponding = project.authors.flatMap((a) =>
+  "email" in a ? [{ name: a.name, email: a.email }] : [],
+);
 ---
 <section class="section section--sunken" id="paper">
   <div class="wrap paper">
@@ -8,10 +18,36 @@ import { project } from "../data/project";
       <p class="eyebrow">Paper</p>
       <h2 class="paper__title">{project.paperTitle}</h2>
       <p class="paper__status">
-        <span class="badge badge--warn">Under review</span>
-        Unpublished — no venue, DOI or arXiv identifier yet, and no citation to give.
-        The author list is anonymized for review.
+        <span class="badge badge--accent">Preprint</span>
+        <a class="paper__id" href={project.links.arxivAbs} rel="noopener">arXiv:{project.arxiv.id}</a>
+        <span>Submitted {project.arxiv.submitted}. Not yet peer-reviewed — no venue or DOI, so cite the preprint.</span>
       </p>
+
+      <div class="paper__by">
+        <p class="paper__authors">
+          {authors.map((a, i) => (
+            <span class="paper__author">
+              {a.name}<sup>{a.sup}</sup>{i < authors.length - 1 && <span aria-hidden="true">,</span>}
+            </span>
+          ))}
+        </p>
+        <p class="paper__affs">
+          {project.affiliations.map((f) => (
+            <span class="paper__aff"><sup>{f.id}</sup>{f.name}</span>
+          ))}
+        </p>
+        <p class="paper__notes">
+          {project.authorNotes.map((n) => (
+            <span><sup>{n.mark}</sup>{n.text}</span>
+          ))}
+        </p>
+        <p class="paper__contact">
+          Correspondence:{" "}
+          {corresponding.map((a, i) => (
+            <span>{i > 0 && <span aria-hidden="true">, </span>}<a href={`mailto:${a.email}`}>{a.email}</a></span>
+          ))}
+        </p>
+      </div>
       <p class="paper__abs">
         We introduce Climate-ModernBERT, a family of climate-adapted encoders obtained by
         continued pretraining of ModernBERT-Base on academic climate text, climate-filtered web
@@ -22,8 +58,19 @@ import { project } from "../data/project";
         multi-source training.
       </p>
       <div class="paper__actions">
-        <a class="btn btn--primary" href={withBase(project.links.paperPdf)}>Read the PDF</a>
+        <a class="btn btn--primary" href={project.links.arxivPdf} rel="noopener">Read the PDF</a>
+        <a class="btn" href={project.links.arxivAbs} rel="noopener">arXiv abstract</a>
         <a class="btn" href={project.links.github} rel="noopener">Code &amp; pipelines</a>
+      </div>
+
+      <div class="cite">
+        <div class="cite__head">
+          <h3>Cite this work</h3>
+          <button class="cite__copy" id="cite-copy" type="button" data-bibtex={project.bibtex}>
+            Copy BibTeX
+          </button>
+        </div>
+        <pre><code>{project.bibtex}</code></pre>
       </div>
     </div>
 
@@ -53,6 +100,40 @@ import { project } from "../data/project";
     font-size: .8125rem; color: var(--fg-muted);
     padding-bottom: 1.25rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--line);
   }
+  .paper__id {
+    font-family: var(--font-mono); font-size: .8125rem;
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid var(--accent-line);
+  }
+  .paper__id:hover { border-bottom-color: var(--accent); }
+
+  .paper__by { margin-bottom: 1.5rem; }
+  .paper__authors {
+    display: flex; flex-wrap: wrap; gap: .1rem .4rem;
+    font-size: .9375rem; font-weight: 560; color: var(--fg); margin: 0 0 .4rem;
+  }
+  .paper__author { white-space: nowrap; }
+  .paper__authors sup {
+    font-size: .65em; font-weight: 500; color: var(--accent);
+    margin-left: .1em; vertical-align: super; line-height: 0;
+  }
+  .paper__affs {
+    display: flex; flex-wrap: wrap; gap: .15rem .9rem;
+    font-size: .8125rem; color: var(--fg-muted); margin: 0;
+  }
+  .paper__aff sup {
+    font-size: .7em; color: var(--accent); margin-right: .2em;
+    vertical-align: super; line-height: 0;
+  }
+  .paper__notes {
+    display: flex; flex-wrap: wrap; gap: .15rem .9rem;
+    font-size: .75rem; color: var(--fg-faint); margin: .5rem 0 0;
+  }
+  .paper__notes sup { margin-right: .25em; vertical-align: super; line-height: 0; }
+  .paper__contact { font-size: .75rem; color: var(--fg-faint); margin: .35rem 0 0; }
+  .paper__contact a { color: var(--fg-muted); }
+  .paper__contact a + span { margin-right: .1rem; }
+
   .paper__abs { font-size: .9375rem; color: var(--fg-muted); max-width: var(--measure); margin-bottom: 1.5rem; }
   .paper__actions { display: flex; flex-wrap: wrap; gap: .6rem; }
 
@@ -62,4 +143,37 @@ import { project } from "../data/project";
   }
   .paper__side h3 { font-size: .875rem; margin-bottom: .6rem; }
   .paper__side ul { margin: 0; padding-left: 1.1rem; font-size: .8125rem; color: var(--fg-muted); display: grid; gap: .45rem; }
+
+  .cite { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+  .cite__head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; margin-bottom: .7rem;
+  }
+  .cite__head h3 { font-size: .875rem; margin: 0; }
+  .cite__copy {
+    font: inherit; font-size: .75rem; font-weight: 600;
+    color: var(--fg-muted); background: var(--bg-raised);
+    border: 1px solid var(--line-strong); border-radius: 999px;
+    padding: .3rem .7rem; cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .cite__copy:hover { border-color: var(--accent); color: var(--accent); }
+  .cite pre { font-size: .75rem; line-height: 1.6; }
 </style>
+
+<script>
+  const btn = document.getElementById("cite-copy") as HTMLButtonElement | null;
+  const bibtex = btn?.dataset.bibtex ?? "";
+
+  // The <pre> stays the source of truth on failure — readers can always select it.
+  btn?.addEventListener("click", async () => {
+    const restore = btn.textContent;
+    try {
+      await navigator.clipboard.writeText(bibtex);
+      btn.textContent = "Copied";
+    } catch {
+      btn.textContent = "Press ⌘C to copy";
+    }
+    setTimeout(() => { btn.textContent = restore; }, 1800);
+  });
+</script>
