@@ -56,52 +56,6 @@ fine-tuning runs.
    the strongest single source (74.5) and joint training on the full union (74.8). The
    source task vectors are nearly orthogonal (pairwise cosine 0.06–0.18).
 
-## Model collection
-
-The paper's checkpoints are published under
-[**CMB-ClimateModernBERT**](https://huggingface.co/CMB-ClimateModernBERT). Names are the corpus
-set in `A_S_F` order, then the training stage — `CX` for Phase 1, `CX_LRD` for Phase 1 + Phase 2:
-
-| Use case | Checkpoint | Avg F1 |
-|---|---|---|
-| **General use** | [`Merge_Soup_LRD`](https://huggingface.co/CMB-ClimateModernBERT/Merge_Soup_LRD) — uniform weight average of the three single-source models | **76.3** |
-| Best single (non-merged) | [`A_CX`](https://huggingface.co/CMB-ClimateModernBERT/A_CX) — academic only, Phase 1 | 75.3 |
-| Joint training on the union | [`A_S_F_CX_LRD`](https://huggingface.co/CMB-ClimateModernBERT/A_S_F_CX_LRD) | 74.8 |
-
-<details>
-<summary>All 25 republished checkpoints</summary>
-
-**Jointly trained.** `A_CX` · `S_CX` · `F_CX` · `A_S_CX` · `A_F_CX` and their `_CX_LRD`
-counterparts, plus `S_F_CX_LRD` and `A_S_F_CX_LRD`. The {𝒮, ℱ} and {𝒜, 𝒮, ℱ} Phase-1
-checkpoints were never published.
-
-**Merged (Table 4).** `Merge_Soup_LRD` · `Merge_TA_L10_LRD` · `Merge_TA_L05_LRD` ·
-`Merge_TIES_D07_LRD` · `Merge_TIES_D05_LRD` · `Merge_DARE_D05_LRD` · `Merge_DARE_D07_LRD`
-
-**Appendix F.** `Merge_Norm_LRD` · `Merge_Soup_CX` · `Merge_Norm_CX`
-
-**Figure 2 drop-one ablations.** `Merge_Soup_drop_A_LRD` · `Merge_Soup_drop_S_LRD` ·
-`Merge_Soup_drop_F_LRD`
-
-</details>
-
-The original [`sraj/*`](https://huggingface.co/sraj) repositories are **untouched** — nothing was
-renamed or deleted there, so existing links and the merge configs still resolve. Those names are
-historical experiment identifiers: `MARK` and `ZYDA` are both academic components of 𝒜, `WX_SYN`
-and `SYN` are synthetic data, and `FWEdu_V2_FastTxt` is ℱ after FastText filtering.
-[`docs/model-naming.md`](./docs/model-naming.md) maps the two schemes and records what is still
-unconfirmed; [`docs/model-inventory.md`](./docs/model-inventory.md) catalogues all 56 checkpoints.
-
-```python
-from transformers import AutoTokenizer, AutoModel   # transformers >= 4.48
-
-model_id = "CMB-ClimateModernBERT/Merge_Soup_LRD"
-tokenizer = AutoTokenizer.from_pretrained(model_id)
-model = AutoModel.from_pretrained(model_id)
-```
-
-ModernBERT is native to `transformers` from 4.48 onward, so no `trust_remote_code` is needed.
-
 ## Repository structure
 
 ```
